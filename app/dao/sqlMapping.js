@@ -5,13 +5,15 @@ module.exports = {
         findByName: 'select * from member where mobile=?',
         findById: 'select * from member where id =?',
         findByIds: 'select id, mobile, nickName, headPic from member where id in (?) order by field(id,?)',
-        update: 'update member set ? where id = ?'
+        update: 'update member set ? where id = ?',
+        search: 'select id, mobile, nickName, headPic from member where mobile like ? or nickName like ?'
     },
     book: {
         insert: 'insert book set ?',
         findByIsbn: 'select * from book where isbn10=? or isbn13=?',
         findById: 'select * from book where id = ?',
-        findByIds: 'select id, title, image, image_large, image_medium, image_small from book where id in(?) order by field(id, ?)'
+        findByIds: 'select id, title, image, image_large, image_medium, image_small from book where id in(?) order by field(id, ?)',
+        search: 'select * from book where title like ?'
     },
     device: {
         insert: 'insert device set ?',

@@ -6,9 +6,8 @@ var auth = require('./middleware/auth');
 var logger = require('./middleware/logger');
 var server = restify.createServer(config.server);
 restify.CORS.ALLOW_HEADERS.push('Access-Control-Allow-Origin');
-console.log(new Date().getTime())
 server.use(restify.CORS());
-server.opts(/.*/, function (req,res,next) {
+server.opts(/.*/, function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Methods", req.header("Access-Control-Request-Method"));
     res.header("Access-Control-Allow-Headers", req.header("Access-Control-Request-Headers"));

@@ -14,5 +14,8 @@ module.exports = {
     findByIds: function (idList) {
         var sql = sqlMapping.book.findByIds.replace(/\?/g, idList);
         return db.query(sql);
+    },
+    search: function (keyWords) {
+        return db.query(sqlMapping.book.search, '%' + keyWords + '%');
     }
 }

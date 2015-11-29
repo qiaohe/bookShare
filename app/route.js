@@ -1,9 +1,10 @@
 var memberController = require('./controller/memberController');
 var thirdPartyController = require('./controller/thirdPartyController');
-var tagPartyController = require('./controller/tagController');
+var tagController = require('./controller/tagController');
 var bookController = require('./controller/bookController');
 var deviceController = require('./controller/deviceController');
 var friendController = require('./controller/friendController');
+var messageController = require('./controller/messageController');
 module.exports = [
     {
         method: "get",
@@ -40,13 +41,34 @@ module.exports = [
     {
         method: "post",
         path: "/api/tags",
-        handler: tagPartyController.addTag,
+        handler: tagController.addTag,
         secured: 'user'
     },
     {
-        method: "get",
+        method: "del",
         path: "/api/tags",
-        handler: tagPartyController.getTags,
+        handler: tagController.removeTag,
+        secured: 'user'
+    },
+
+    {
+        method: "del",
+        path: "/api/book/tags",
+        handler: tagController.removeBookTag,
+        secured: 'user'
+    },
+
+    {
+        method: "get",
+        path: "/api/books/:bookId/tags",
+        handler: tagController.getTagsOfBook,
+        secured: 'user'
+    },
+
+    {
+        method: "get",
+        path: "/api/tags/:type",
+        handler: tagController.getTags,
         secured: 'user'
     },
     {
@@ -81,6 +103,12 @@ module.exports = [
         secured: 'user'
     },
     {
+        method: "get",
+        path: "/api/will/books/:bookId",
+        handler: bookController.getWillBookById,
+        secured: 'user'
+    },
+    {
         method: "post",
         path: "/api/books/:bookId/borrow",
         handler: bookController.borrow,
@@ -108,7 +136,7 @@ module.exports = [
 
     {
         method: "get",
-        path: "/api/books/borrowed/:bookId/lenders/:lenderId",
+        path: "/api/borrowed/books/:bookId/lenders/:lenderId",
         handler: bookController.getBookWithinBorrowed,
         secured: 'user'
     },
@@ -127,7 +155,7 @@ module.exports = [
     },
     {
         method: "get",
-        path: "/api/books/borrowing/:bookId/lenders/:lenderId",
+        path: "/api/borrowing/books/:bookId/lenders/:lenderId",
         handler: bookController.getBookWithinBorrowing,
         secured: 'user'
     },
@@ -145,7 +173,7 @@ module.exports = [
     },
     {
         method: "get",
-        path: "/api/friends/:friendId",
+        path: "/api/friend/:friendId",
         handler: friendController.getFriend,
         secured: 'user'
     },
@@ -156,19 +184,6 @@ module.exports = [
         handler: bookController.borrowed,
         secured: 'user'
     },
-    {
-        method: "post",
-        path: "/api/books/:bookId/tags",
-        handler: tagPartyController.addTagForBook,
-        secured: 'user'
-    },
-    {
-        method: "get",
-        path: "/api/books/:bookId/tags",
-        handler: tagPartyController.getTagsForBook,
-        secured: 'user'
-    },
-
     {
         method: "post",
         path: "/api/books/:bookId/favorite",
@@ -201,6 +216,12 @@ module.exports = [
         secured: 'user'
     },
     {
+        method: 'post',
+        path: '/api/books/share',
+        handler: bookController.share,
+        secured: 'user'
+    },
+    {
         method: "post",
         path: "/api/devices",
         handler: deviceController.addDevice,
@@ -228,6 +249,42 @@ module.exports = [
         method: "get",
         path: "/api/summary",
         handler: bookController.getQueueSummary,
+        secured: 'user'
+    },
+    {
+        method: "get",
+        path: "/api/types/:type/search",
+        handler: tagController.search,
+        secured: 'user'
+    },
+    {
+        method: 'post',
+        path: '/api/messages',
+        handler: messageController.send,
+        secured: 'user'
+    },
+    {
+        method: 'get',
+        path: '/api/conversations',
+        handler: messageController.getConversations,
+        secured: 'user'
+    },
+    {
+        method: 'get',
+        path: '/api/conversations/friends/:friendId/messages',
+        handler: messageController.getConversationWithFriendId,
+        secured: 'user'
+    },
+    {
+        method: 'get',
+        path: '/api/conversations/friends/:friendId/messages/after',
+        handler: messageController.getConversationWithFriendIdAfter,
+        secured: 'user'
+    },
+    {
+        method: 'get',
+        path: '/api/conversations/unread',
+        handler: messageController.getUnreadMessageCount,
         secured: 'user'
     }
 ];

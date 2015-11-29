@@ -9,7 +9,7 @@ module.exports = {
     getMemberInfo: function (req, res, next) {
         var uid = req.user.id;
         memberDAO.findById(uid).then(function (members) {
-            res.send({ret: 0, data: members});
+            res.send({ret: 0, data: members[0]});
         });
         return next();
     },

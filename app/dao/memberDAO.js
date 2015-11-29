@@ -17,6 +17,9 @@ module.exports = {
     },
     update: function (member) {
         return db.query(sqlMapping.user.update, [member, member.id]);
-    }
+    },
 
+    search: function (keyWords) {
+        return db.query(sqlMapping.user.search, ['%' + keyWords + '%', '\'%' + keyWords + '%\'']);
+    }
 }

@@ -9,6 +9,7 @@ var redis = require('../../middleware/redisClient');
 var memberDAO = require('../dao/memberDAO');
 var i18n = require('../../i18n/localeMessage');
 var moment = require('moment');
+var messageSender = require('../domain/messageSender');
 module.exports = {
     addBook: function (req, res, next) {
         var uid = req.user.id;
@@ -48,6 +49,7 @@ module.exports = {
             var to = +req.query.from + (+req.query.size) - 1;
             return redis.zrangeAsync([`uid:${uid}:friends.books`, from, to]);
         }).then(function (bookIdList) {
+            if (!bookIdList.length)  return res.send({ret: 0, data: []});
             return bookDAO.findByIds(bookIdList.join(','));
         }).then(function (books) {
             Promise.map(books, function (book) {
@@ -119,6 +121,7 @@ module.exports = {
         redis.zadd([`uid:${lender}:lending.books.unread`, d, bookId]);
         redis.zadd([`book:${bookId}:borrowing.users`, d, uid]);
         redis.zadd([`uid:${lender}:book:${bookId}:borrowing.users`, d, uid]);
+        redis.zrem(`uid:${lender}:will.books`, bookId);
         res.send({ret: 0, message: i18n.get('borrow.apply.success')});
         return next();
     },
@@ -145,7 +148,7 @@ module.exports = {
             return Promise.map(bookIdList, function (item) {
                 var ps = item.split(':');
                 var book = {};
-                return redis.zrank(`uid:${uid}:${queueName}.books.unread`, item).then(function (reply) {
+                return redis.zrankAsync(`uid:${uid}:${queueName}.books.unread`, item).then(function (reply) {
                     book.isNew = (reply != null);
                     return bookDAO.findByIds(ps[1]).then(function (result) {
                         book = result[0];
@@ -163,7 +166,7 @@ module.exports = {
         }).then(function (books) {
             if (queueName === 'lending') {
                 return Promise.map(books, function (book) {
-                    return redis.zrank(`uid:${uid}:${queueName}.books.unread`, item).then(function (reply) {
+                    return redis.zrankAsync(`uid:${uid}:${queueName}.books.unread`, book.id).then(function (reply) {
                         book.isNew = (reply != null);
                         return redis.getAsync(`uid:${uid}:book:${book.id}:borrower`).then(function (borrower) {
                             book.borrower = borrower;
@@ -175,7 +178,7 @@ module.exports = {
                 })
             } else if (queueName === 'lent') {
                 return Promise.map(books, function (book) {
-                    return redis.zrank(`uid:${uid}:${queueName}.books.unread`, item).then(function (reply) {
+                    return redis.zrankAsync(`uid:${uid}:${queueName}.books.unread`, book.id).then(function (reply) {
                         book.isNew = (reply != null);
                         return redis.getAsync(`uid:${uid}:book:${book.id}:confirmReturn`).then(function (result) {
                             book.returning = result;
@@ -279,17 +282,19 @@ module.exports = {
     getBookWithinBorrowing: function (req, res, next) {
         var bookId = req.params.bookId;
         var lenderId = req.params.lenderId;
+        var uid = req.user.id;
         var result = {};
-        redis.zrem(`uid:${uid}:borrowing.books.unread`, lenderId + ':' + bookId);
-        bookDAO.findById(bookId).then(function (books) {
-            result = books[0];
-            return memberDAO.findByIds(lenderId);
-        }).then(function (lender) {
-            result.lender = lender;
-            return redis.getAsync(`uid:${lenderId}:book:${bookId}:borrower`);
-        }).then(function (borrowerId) {
-            result.borrowState = (borrowerId == req.user.id);
-            return res.send({ret: 0, data: result});
+        redis.zremAsync(`uid:${uid}:borrowing.books.unread`, lenderId + ':' + bookId).then(function () {
+            return bookDAO.findById(bookId).then(function (books) {
+                result = books[0];
+                return memberDAO.findByIds(lenderId);
+            }).then(function (lender) {
+                result.lender = lender;
+                return redis.getAsync(`uid:${lenderId}:book:${bookId}:borrower`);
+            }).then(function (borrowerId) {
+                result.borrowState = (borrowerId == req.user.id);
+                return res.send({ret: 0, data: result});
+            });
         });
         return next();
     },
@@ -302,7 +307,7 @@ module.exports = {
             if (!bookIdList.length) return res.send({ret: 0, data: []});
             return bookDAO.findByIds(bookIdList);
         }).then(function (books) {
-            res.send({ret: 0, data: books});
+            return res.send({ret: 0, data: books});
         });
         return next();
     },
@@ -326,6 +331,9 @@ module.exports = {
         var lender = req.params.lenderId;
         var bookId = req.params.bookId;
         redis.set(`uid:${lender}:book:${bookId}:confirmReturn`, true);
+        bookDAO.findById(bookId).then(function (books) {
+            messageSender.send(uid, lender, '朋友要还《' + books[0].title + '》给你。')
+        })
         return res.send({ret: 0, message: i18n.get('book.return.success')});
     },
 
@@ -333,10 +341,14 @@ module.exports = {
         var uid = req.user.id;
         var bookId = req.params.bookId;
         var borrower = req.params.borrower;
+        var d = new Date().getTime();
         redis.zrem(`uid:${uid}:lent.books`, bookId);
-        redis.zadd(`uid:${uid}:will.books`, bookId);
-        redis.zadd(`uid:${uid}:will.books.unread`, bookId);
+        redis.zadd(`uid:${uid}:will.books`, d, bookId);
+        redis.zadd(`uid:${uid}:will.books.unread`, d, bookId);
         redis.zrem(`uid:${borrower}:borrowed.books`, uid + ':' + bookId);
+        bookDAO.findById(bookId).then(function (books) {
+            messageSender.send(uid, borrower, '我已经收到还书《' + books[0].title + '》。')
+        });
         return res.send({ret: 0, message: i18n.get('book.confirmReturn.success')});
     },
 
@@ -344,8 +356,11 @@ module.exports = {
         var uid = req.user.id;
         var result = {};
         Promise.map(['lending', 'lent', 'borrowing', 'borrowed', 'private', 'will'], function (queue) {
-            return redis.zcardAsync(`uid:${uid}:${queue}.books.unread`).then(function (count) {
-                result[queue] = count;
+            return redis.zcardAsync(`uid:${uid}:${queue}.books`).then(function (count) {
+                result[queue] = {count: count};
+                return redis.zcardAsync(`uid:${uid}:${queue}.books.unread`)
+            }).then(function (unreadCount) {
+                result[queue].isNew = (unreadCount > 0);
             });
         }).then(function () {
             return redis.zcardAsync(`uid:${uid}:favorite.books`);
@@ -368,6 +383,14 @@ module.exports = {
         redis.zrem(`uid:${uid}:lending.books.unread`, bookId);
         redis.zrem(`uid:${uid}:public.books`, bookId);
         redis.del(`uid:${uid}:book:${bookId}:holder`);
+        redis.zrangeAsync([`book:${bookId}:borrowing.users`, 0, -1]).then(function (borrowers) {
+            borrowers && bookDAO.findById(bookId).then(function (books) {
+                var messageBody = config.template.bookUnavailable.replace(':title', books[0].title);
+                borrowers && borrowers.forEach(function (borrower) {
+                    messageSender.send(uid, borrower, messageBody);
+                });
+            });
+        });
         res.send({ret: 0, message: i18n.get('book.remove.success')})
     },
 
@@ -381,8 +404,17 @@ module.exports = {
         redis.zrem(`uid:${uid}:will.books.unread`, bookId);
         redis.zrem(`uid:${uid}:lending.books`, bookId);
         redis.zrem(`uid:${uid}:lending.books.unread`, bookId);
+        redis.zrangeAsync([`book:${bookId}:borrowing.users`, 0, -1]).then(function (borrowers) {
+            borrowers && bookDAO.findById(bookId).then(function (books) {
+                var messageBody = config.template.bookUnavailable.replace(':title', books[0].title);
+                borrowers && borrowers.forEach(function (borrower) {
+                    messageSender.send(uid, borrower, messageBody);
+                });
+            });
+        });
         res.send({ret: 0, message: i18n.get('book.put.private.success')})
     },
+
     putIntoWill: function (req, res, next) {
         var uid = req.user.id;
         var bookId = req.params.bookId;
@@ -391,7 +423,30 @@ module.exports = {
         redis.zadd(`uid:${uid}:public.books`, d, bookId);
         redis.zadd(`uid:${uid}:will.books.unread`, d, bookId);
         redis.zadd(`book:${bookId}:owners`, d, uid);
-        res.send({ret: 0, message: i18n.get('book.put.will.success')})
+        redis.zrem(`uid:${uid}:private.books`, bookId);
+        //redis.zrem(`uid:${uid}:public.books`, bookId);
+        res.send({ret: 0, message: i18n.get('book.put.will.success')});
+        return next();
+    },
+    getWillBookById: function (req, res, next) {
+        var bookId = req.params.bookId;
+        bookDAO.findById(bookId).then(function (books) {
+            if (!books.length) return res.send({ret: 0, data: []});
+            return res.send({ret: 0, data: books[0]});
+        });
+        return next();
+    },
+    share: function (req, res, next) {
+        var uid = req.user.id;
+        var bookId = req.body.bookId;
+        var to = req.body.to;
+        bookDAO.findById(bookId).then(function (books) {
+            if (!books.length) return res.send({ret: 0, message: i18n.get('book.share.success')});
+            var template = config.template.share;
+            var body = template.replace(':title', books[0].title).replace(":bookId", bookId).replace(":image", books[0].image_large);
+            messageSender.send(uid, to, body);
+            return res.send({ret: 0, message: i18n.get('book.share.success')});
+        });
         return next();
     }
 }

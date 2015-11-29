@@ -4,7 +4,7 @@ module.exports = {
     server: {
         name: 'book share ',
         version: '0.0.1',
-        host: 'localhost',
+        host: 'mobile.gengyaochina.com',
         port: 8081
     },
     db: {
@@ -24,8 +24,8 @@ module.exports = {
         inviteTemplate: '【手绢】亲，我在用“手绢”和朋友分享图书。你也来试一试吧：http://itunes.apple.com/01294'
     },
     redis: {
-        host: '115.28.181.99',
-        port: 6379,
+        host: 'mobile.gengyaochina.com',
+        port: 6380,
         password: "gengyaochina2015"
     },
     sms: {
@@ -45,6 +45,10 @@ module.exports = {
     jpush: {
         masterSecret: "e77461a38257ec2049387a04",
         appKey: "0fce1f73a7ac164ca3e09dc7"
+    },
+    template: {
+        bookUnavailable: "对不起，我暂时不能或不愿借出《:title》。谢谢理解！",
+        share: "我分享一本书给您，书名为:\<a href='#/tab/book/:bookId'>:title<br/><img src=\":image\"/\>\<\/a\>"
     }
 };
 

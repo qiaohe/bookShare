@@ -20,5 +20,8 @@
   "friends.add.same.error": "不能添加自己为好友",
   "book.remove.success": "图书下架成功",
   "book.put.private.success": "更改图书为私密，暂不出借成功",
-  "book.put.will.success": "更待到等待出借成功"
+  "book.put.will.success": "更待到等待出借成功",
+  "tag.remove.success": "删除标签成功",
+  "tag.book.remove.success": "删除书籍标签成功",
+  "book.share.success": "分享图书成功"
 }
