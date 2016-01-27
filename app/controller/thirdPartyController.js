@@ -1,10 +1,10 @@
+"use strict";
 var config = require('../../config');
 var Promise = require('bluebird');
 var request = Promise.promisifyAll(require('request'));
 var redis = require('../../middleware/redisClient');
 var _ = require('lodash');
 var i18n = require('../../i18n/localeMessage');
-
 module.exports = {
     sendSMS: function (req, res, next) {
         var smsConfig = config.sms;
@@ -20,5 +20,11 @@ module.exports = {
             res.send({ret: 0, message: i18n.get('sms.send.success')});
         });
         return next();
+    },
+    getToken: function (req, res, next) {
+        rongcloudSDK.user.getToken(req.body.uid, req.body.nickName, req.body.headPic, function (err, resultText) {
+            if (err) throw err;
+            res.send({ret: 0, data: JSON.parse(resultText)})
+        });
     }
 }

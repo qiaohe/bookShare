@@ -4,11 +4,11 @@ module.exports = {
     server: {
         name: 'book share ',
         version: '0.0.1',
-        host: 'mobile.gengyaochina.com',
+        host: '115.29.220.81',
         port: 8081
     },
     db: {
-        host: 'mobile.gengyaochina.com',
+        host: '115.29.220.81',
         port: '3306',
         user: 'root',
         password: 'gybill',
@@ -19,12 +19,12 @@ module.exports = {
     app: {
         locale: 'zh_CN',
         tokenSecret: 'ilovescotchyscotch',
-        tokenExpire: 1440,
+        tokenExpire: 1440000,
         crawlerUrl: 'https://api.douban.com/v2/book/isbn/::ISBN',
         inviteTemplate: '【手绢】亲，我在用“手绢”和朋友分享图书。你也来试一试吧：http://itunes.apple.com/01294'
     },
     redis: {
-        host: 'mobile.gengyaochina.com',
+        host: '115.29.220.81',
         port: 6380,
         password: "gengyaochina2015"
     },
@@ -49,6 +49,10 @@ module.exports = {
     template: {
         bookUnavailable: "对不起，我暂时不能或不愿借出《:title》。谢谢理解！",
         share: "我分享一本书给您，书名为:\<a href='#/tab/book/:bookId'>:title<br/><img src=\":image\"/\>\<\/a\>"
+    },
+    rongcloud: {
+        appKey: 'pgyu6atqy0lru',
+        appSecret: 'VoilfGpj40m'
     }
 };
 

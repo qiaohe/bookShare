@@ -1,7 +1,7 @@
 "use strict";
 var _ = require('lodash');
 const IMAGE_PATTERNS = ['large', 'medium', 'small'];
-const REMOVE_PROPERTIES = ['rating', 'tags', 'images', 'alt', 'id', 'alt_title', 'url', 'series'];
+const REMOVE_PROPERTIES = ['rating', 'tags', 'images', 'alt', 'id', 'alt_title', 'url', 'series','ebook_price','ebook_url'];
 class Book {
     constructor(body, uid) {
         this.body = body;

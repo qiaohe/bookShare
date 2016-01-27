@@ -8,6 +8,10 @@ module.exports = {
     findByIsbn: function (isbn) {
         return db.query(sqlMapping.book.findByIsbn, [isbn, isbn]);
     },
+    findByTitle: function (title) {
+        return db.query(sqlMapping.book.findByTitle, title);
+    },
+
     findById: function (bookId) {
         return db.query(sqlMapping.book.findById, bookId);
     },

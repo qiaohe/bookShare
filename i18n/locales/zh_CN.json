@@ -23,5 +23,6 @@
   "book.put.will.success": "更待到等待出借成功",
   "tag.remove.success": "删除标签成功",
   "tag.book.remove.success": "删除书籍标签成功",
-  "book.share.success": "分享图书成功"
+  "book.share.success": "分享图书成功",
+  "friend.remove.success": "删除好友成功"
 }

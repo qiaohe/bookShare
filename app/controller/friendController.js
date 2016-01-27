@@ -6,6 +6,7 @@ var Promise = require('bluebird');
 var request = Promise.promisifyAll(require('request'));
 var i18n = require('../../i18n/localeMessage');
 var _ = require('lodash');
+var messageSender = require('../domain/messageSender');
 module.exports = {
     getFriends: function (req, res, next) {
         var uid = req.user.id;
@@ -26,8 +27,10 @@ module.exports = {
             if (members.length) {
                 var friendUid = members[0].id;
                 if (friendUid == uid) return res.send({ret: 0, message: i18n.get('friends.add.same.error')});
-                redis.zaddAsync([`uid:${uid}:friends`, new Date().getTime(), friendUid]);
-                return redis.zaddAsync([`uid:${friendUid}:friends`, new Date().getTime(), uid]);
+                return redis.zaddAsync([`uid:${uid}:friends`, new Date().getTime(), friendUid]).then(function(){
+                    messageSender.send(uid, friendUid, '我想和你成为好友，互相晒书或者分享图书，如果可以，点击这条留言，我们可以就可以看见对方的图书了。')
+                    return redis.zaddAsync([`uid:${friendUid}:friends`, new Date().getTime(), uid]);
+                });
             } else {
                 var smsConfig = config.sms;
                 var option = _.assign(smsConfig.option, {
@@ -39,6 +42,15 @@ module.exports = {
             }
         }).then(function () {
             res.send({ret: 0, message: i18n.get('friend.add.success')});
+        });
+        return next();
+    },
+
+    removeFriend: function (req, res, next) {
+        var uid = req.user.id;
+        var friendUid = req.params.friendId;
+        redis.zremAsync([`uid:${uid}:friends`, friendUid]).then(function () {
+            res.send({ret:0, message:i18n.get('friend.remove.success')});
         });
         return next();
     },

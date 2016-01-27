@@ -40,6 +40,11 @@ module.exports = [
     },
     {
         method: "post",
+        path: "/api/rongCloud/token",
+        handler: thirdPartyController.getToken
+    },
+    {
+        method: "post",
         path: "/api/tags",
         handler: tagController.addTag,
         secured: 'user'
@@ -77,6 +82,13 @@ module.exports = [
         handler: bookController.addBook,
         secured: 'user'
     },
+    {
+        method: "post",
+        path: "/api/books/manually",
+        handler: bookController.addBookManually,
+        secured: 'user'
+    },
+
     {
         method: "get",
         path: "/api/books/:bookId",
@@ -208,6 +220,12 @@ module.exports = [
         handler: bookController.getBookByQueueName,
         secured: 'user'
     },
+    {
+        method: "get",
+        path: "/api/books/:queue/history",
+        handler: bookController.getHistory,
+        secured: 'user'
+    },
 
     {
         method: "get",
@@ -245,6 +263,13 @@ module.exports = [
         handler: friendController.addFriend,
         secured: 'user'
     },
+    {
+        method: "del",
+        path: "/api/friends/:friendId",
+        handler: friendController.removeFriend,
+        secured: 'user'
+    },
+
     {
         method: "get",
         path: "/api/summary",

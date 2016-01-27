@@ -5,6 +5,10 @@ module.exports = {
     findById: function (uid) {
         return db.query(sqlMapping.user.findById, uid);
     },
+    findByIdWithProfile: function (uid) {
+        return db.query(sqlMapping.user.findByIdWithProfile, uid);
+    },
+
     insert: function (member) {
         return db.query(sqlMapping.user.insert, member);
     },

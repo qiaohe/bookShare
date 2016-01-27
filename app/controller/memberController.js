@@ -5,6 +5,9 @@ var config = require('../../config');
 var redis = require('../../middleware/redisClient');
 var memberDAO = require('../dao/memberDAO');
 var i18n = require('../../i18n/localeMessage');
+var rongcloudSDK = require('rongcloud-sdk');
+rongcloudSDK.init(config.rongcloud.appKey, config.rongcloud.appSecret);
+var Promise = require('bluebird');
 module.exports = {
     getMemberInfo: function (req, res, next) {
         var uid = req.user.id;
@@ -42,7 +45,10 @@ module.exports = {
             });
             var token = jwt.sign(user, config.app.tokenSecret, {expiresInMinutes: config.app.tokenExpire});
             redis.set(token, JSON.stringify(user));
-            res.send({uid: user.id, token: token});
+            rongcloudSDK.user.getToken(user.id, user.mobile, user.headPic, function (err, resultText) {
+                if (err) throw err;
+                res.send({uid: user.id, token: token, rongCloudToken: JSON.parse(resultText).token});
+            });
         });
         return next();
     },
@@ -59,7 +65,11 @@ module.exports = {
             var token = jwt.sign(member, config.app.tokenSecret, {expiresInMinutes: config.app.tokenExpire});
             redis.set(token, JSON.stringify(member));
             member.token = token;
-            res.send({ret: 0, data: member});
+            rongcloudSDK.user.getToken(member.id, member.nickName, member.headPic, function (err, resultText) {
+                if (err) throw err;
+                member.rongCloudToken = JSON.parse(resultText).token;
+                res.send({ret: 0, data: member})
+            });
         });
         return next();
     },

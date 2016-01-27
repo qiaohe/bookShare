@@ -17,6 +17,7 @@
     "mysql": "^2.9.0",
     "redis": "^2.1.0",
     "request": "^2.65.0",
-    "restify": "^4.0.3"
+    "restify": "^4.0.3",
+    "rongcloud-sdk": "^1.0.3"
   }
 }
