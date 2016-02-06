@@ -265,6 +265,12 @@ module.exports = [
     },
     {
         method: "del",
+        path: "/api/friends/:id",
+        handler: friendController.deleteFriend,
+        secured: 'user'
+    },
+    {
+        method: "del",
         path: "/api/friends/:friendId",
         handler: friendController.removeFriend,
         secured: 'user'
@@ -311,5 +317,10 @@ module.exports = [
         path: '/api/conversations/unread',
         handler: messageController.getUnreadMessageCount,
         secured: 'user'
+    },
+    {
+        method: 'get',
+        path: '/api/qiniu/token',
+        handler: thirdPartyController.getQiniuToken
     }
 ];

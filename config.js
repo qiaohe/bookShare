@@ -21,7 +21,7 @@ module.exports = {
         tokenSecret: 'ilovescotchyscotch',
         tokenExpire: 1440000,
         crawlerUrl: 'https://api.douban.com/v2/book/isbn/::ISBN',
-        inviteTemplate: '【手绢】亲，我在用“手绢”和朋友分享图书。你也来试一试吧：http://itunes.apple.com/01294'
+        inviteTemplate: '【手绢】亲，我在用“手绢”和朋友分享图书。你也来试一试吧：http://itunes.apple.com/01294. :signature'
     },
     redis: {
         host: '115.29.220.81',
@@ -38,16 +38,16 @@ module.exports = {
         }
     },
     qiniu: {
-        ak: "Q9zN22SLeuoEXwnISamjpj5_EVlrFv9QhLIrA1mb",
-        sk: "SdzJd145VGHpyHPjLJHV8DKElvv4usSu6rf4Hj5w",
-        prefix: "http://7xlj3g.com1.z0.glb.clouddn.com/"
+        ak: "ZNrhKtanGiBCTOPg4XRD9SMOAbLzy8iREzQzUP5T",
+        sk: "L6VfXirR55Gk6mQ67Jn4pg7bksMpc-F5mghT0GK4",
+        prefix: "http://7xqmlo.com2.z0.glb.qiniucdn.com/"
     },
     jpush: {
         masterSecret: "e77461a38257ec2049387a04",
         appKey: "0fce1f73a7ac164ca3e09dc7"
     },
     template: {
-        bookUnavailable: "对不起，我暂时不能或不愿借出《:title》。谢谢理解！",
+        bookUnavailable: "亲，不好意思啊，暂时不能出借《:title》给你，如需更多信息请留言给我。谢谢！。",
         share: "我分享一本书给您，书名为:\<a href='#/tab/book/:bookId'>:title<br/><img src=\":image\"/\>\<\/a\>"
     },
     rongcloud: {

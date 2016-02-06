@@ -13,6 +13,8 @@ db.query = function (sql, values) {
     }), function (connection) {
         return connection.queryAsync(sql, values).then(function (result) {
             return result[0];
+        }).catch(function (err) {
+            throw err;
         });
     });
 };
