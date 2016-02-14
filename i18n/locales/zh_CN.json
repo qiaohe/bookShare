@@ -1,8 +1,9 @@
 {
   "token.invalid": "无效token",
   "access.not.authorized": "未经授权的访问",
+  "token.not.provided": "请提供访问的凭证",
   "logout.success": "成功登出",
-  "token.expired": "token.expired",
+  "token.expired": "token已过期",
   "sms.send.success": "发送短信成功",
   "sms.code.invalid": "无效的短信验证码",
   "tag.add.success": "标签添加成功",
@@ -13,9 +14,9 @@
   "notification.send.success": "推送通知发送成功",
   "friend.add.success": "添加好友成功",
   "borrow.apply.success": "借书申请发送成功",
-  "borrow.book.success": "借入图书成功",
-  "lend.book.success": "借出图书成功",
-  "book.return.success": "归还图书申请成功",
+  "borrow.book.success": "图书已成功借入",
+  "lend.book.success": "图书已成功借出",
+  "book.return.success": "还书申请已发送",
   "book.confirmReturn.success": "图书已归还",
   "friends.add.same.error": "不能添加自己为好友",
   "book.remove.success": "图书下架成功",
@@ -23,6 +24,6 @@
   "book.put.will.success": "更待到等待出借成功",
   "tag.remove.success": "删除标签成功",
   "tag.book.remove.success": "删除书籍标签成功",
-  "book.share.success": "分享图书成功",
-  "friend.remove.success": "删除好友成功"
+  "book.share.success":"分享图书成功",
+  "friend.remove.success":"删除好友成功"
 }

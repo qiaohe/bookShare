@@ -266,16 +266,9 @@ module.exports = [
     {
         method: "del",
         path: "/api/friends/:id",
-        handler: friendController.deleteFriend,
-        secured: 'user'
-    },
-    {
-        method: "del",
-        path: "/api/friends/:friendId",
         handler: friendController.removeFriend,
         secured: 'user'
     },
-
     {
         method: "get",
         path: "/api/summary",

@@ -27,6 +27,7 @@ module.exports = {
             delete user.certCode;
             user.createDate = new Date();
             user.password = md5(req.body.password);
+            user.nickName = user.nickName ? user.nickName : '书友' + user.mobile.substring(user.mobile.length - 4, user.mobile.length)
         }).then(function () {
             return memberDAO.findByUserName(user.mobile);
         }).then(function (result) {
@@ -57,7 +58,7 @@ module.exports = {
         var userName = (req.body && req.body.username) || (req.query && req.query.username);
         var password = (req.body && req.body.password) || (req.query && req.query.password);
         memberDAO.findByUserName(userName).then(function (members) {
-            if (!members || !members.length) return res.send({ret: 0, message: i18n.get('member.not.exists')});
+            if (!members || !members.length) return res.send({ret: 1, message: i18n.get('member.not.exists')});
             var member = members[0];
             if (member.password != md5(password)) return res.send({
                 ret: 0, message: i18n.get('member.password.error')

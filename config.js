@@ -4,17 +4,17 @@ module.exports = {
     server: {
         name: 'book share ',
         version: '0.0.1',
-        host: '115.29.220.81',
-        port: 8081
+        host: '121.42.171.213',
+        port: 8082
     },
     db: {
-        host: '115.29.220.81',
+        host: '121.42.171.213',
         port: '3306',
         user: 'root',
-        password: 'gybill',
+        password: 'heqiao75518',
         debug: false,
         multipleStatements: true,
-        database: 'bookshare'
+        database: 'bookShare'
     },
     app: {
         locale: 'zh_CN',
@@ -24,9 +24,8 @@ module.exports = {
         inviteTemplate: '【手绢】亲，我在用“手绢”和朋友分享图书。你也来试一试吧：http://itunes.apple.com/01294. :signature'
     },
     redis: {
-        host: '115.29.220.81',
-        port: 6380,
-        password: "gengyaochina2015"
+        host: '127.0.0.1',
+        port: 6381
     },
     sms: {
         providerUrl: 'http://115.29.44.189:8080/sms/smsInterface.do',

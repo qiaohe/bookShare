@@ -46,20 +46,27 @@ module.exports = {
         return next();
     },
 
-    deleteFriend: function (req, res, next) {
-        var uid = req.user.id;
-        var friendUid = req.params.id;
-        redis.zrem(`uid:${uid}:friends`, friendUid);
-        redis.zrem(`uid:${friendUid}:friends`, uid);
-        res.send({ret: 0, message: '删除好友成功'});
-        return next();
-    },
+    //deleteFriend: function (req, res, next) {
+    //    var uid = req.user.id;
+    //    var friendUid = req.params.id;
+    //    redis.zrem(`uid:${uid}:friends`, friendUid);
+    //    redis.zrem(`uid:${friendUid}:friends`, uid);
+    //    res.send({ret: 0, message: '删除好友成功'});
+    //    return next();
+    //},
 
     removeFriend: function (req, res, next) {
         var uid = req.user.id;
-        var friendUid = req.params.friendId;
-        redis.zremAsync([`uid:${uid}:friends`, friendUid]).then(function () {
-            res.send({ret: 0, message: i18n.get('friend.remove.success')});
+        var friendUid = req.params.id;
+        redis.zrangeAsync(`uid:${uid}:public.books`, 0, -1).then(function (books) {
+            Promise.map(books, function (bookId) {
+                return redis.zremAsync(`book:${bookId}:borrowing.users`, friendUid);
+            }).then(function () {
+                redis.zremAsync([`uid:${uid}:friends`, friendUid]).then(function () {
+                    res.send({ret: 0, message: i18n.get('friend.remove.success')});
+                });
+            });
+
         });
         return next();
     },
