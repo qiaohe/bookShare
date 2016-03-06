@@ -16,13 +16,11 @@ module.exports = {
         });
         return next();
     },
-
     register: function (req, res, next) {
         var user = req.body;
         redis.getAsync(user.mobile).then(function (reply) {
             if (!(reply && reply == user.certCode)) {
-                res.send({ret: 0, message: i18n.get('sms.code.invalid')});
-                Promise.rejected();
+                throw new Error(i18n.get('sms.code.invalid'));
             }
             delete user.certCode;
             user.createDate = new Date();
@@ -31,10 +29,7 @@ module.exports = {
         }).then(function () {
             return memberDAO.findByUserName(user.mobile);
         }).then(function (result) {
-            if (result.length) {
-                res.send({ret: 0, message: i18n.get('user.mobile.exists')});
-                Promise.rejected();
-            }
+            if (result.length) throw new Error(i18n.get('user.mobile.exists'))
             return memberDAO.insert(user);
         }).then(function (result) {
             user.id = result.insertId;
@@ -48,8 +43,10 @@ module.exports = {
             redis.set(token, JSON.stringify(user));
             rongcloudSDK.user.getToken(user.id, user.mobile, user.headPic, function (err, resultText) {
                 if (err) throw err;
-                res.send({uid: user.id, token: token, rongCloudToken: JSON.parse(resultText).token});
+                return res.send({uid: user.id, token: token, rongCloudToken: JSON.parse(resultText).token});
             });
+        }).catch(function (err) {
+            res.send({ret: 0, message: err.message});
         });
         return next();
     },
