@@ -22,6 +22,10 @@ module.exports = {
     update: function (member) {
         return db.query(sqlMapping.user.update, [member, member.id]);
     },
+    updatePwd: function (pwd, mobile) {
+        return db.query(sqlMapping.user.updatePwd, [pwd, mobile]);
+    },
+
 
     search: function (keyWords) {
         return db.query(sqlMapping.user.search, ['%' + keyWords + '%', '\'%' + keyWords + '%\'']);

@@ -14,6 +14,8 @@ function getMessage(uid, message, callback) {
             nickname: users[0].nickName,
             headPic: users[0].headPic
         }));
+    }).catch(function (err) {
+        res.send({ret: 1, message: err.message});
     });
 }
 
@@ -30,9 +32,11 @@ function getConversationList(uid, conversationUsers, cb) {
                 user.unreadCount = unreadCount ? unreadCount : 0;
                return user;
             });
-        });
+        })
     }).then(function (conversationUsers) {
         cb(null, conversationUsers);
+    }).catch(function (err) {
+        res.send({ret: 1, message: err.message});
     });
 }
 
@@ -51,6 +55,8 @@ module.exports = {
                 redis.zadd(messageKey, new Date().getTime(), JSON.stringify(body));
                 res.send({ret: 0, message: body});
             })
+        }).catch(function (err) {
+            res.send({ret: 1, message: err.message});
         });
         next();
     },
@@ -67,6 +73,8 @@ module.exports = {
                 });
                 res.send({ret: 0, data: data.reverse()});
             });
+        }).catch(function (err) {
+            res.send({ret: 1, message: err.message});
         });
         next();
     },
@@ -83,6 +91,8 @@ module.exports = {
                 });
                 res.send({ret: 0, data: data});
             });
+        }).catch(function (err) {
+            res.send({ret: 1, message: err.message});
         });
         next();
     },
@@ -96,6 +106,8 @@ module.exports = {
                     res.send({ret: 0, data: data});
                 });
             });
+        }).catch(function (err) {
+            res.send({ret: 1, message: err.message});
         });
         next();
     },
@@ -114,6 +126,8 @@ module.exports = {
                     res.send({ret: 0, data: _.sum(results)});
                 });
             })
+        }).catch(function (err) {
+            res.send({ret: 1, message: err.message});
         });
         next();
     }

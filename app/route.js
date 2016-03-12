@@ -315,5 +315,10 @@ module.exports = [
         method: 'get',
         path: '/api/qiniu/token',
         handler: thirdPartyController.getQiniuToken
+    },
+    {
+        method: "post",
+        path: "/api/resetPwd",
+        handler: memberController.resetPwd
     }
 ];

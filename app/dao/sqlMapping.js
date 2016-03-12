@@ -7,6 +7,7 @@ module.exports = {
         findByIdWithProfile: 'select id, mobile, nickName, headPic from member where id =?',
         findByIds: 'select id, mobile, nickName, headPic from member where id in (?) order by field(id,?)',
         update: 'update member set ? where id = ?',
+        updatePwd: 'update member set password=? where mobile = ?',
         search: 'select id, mobile, nickName, headPic from member where mobile like ? or nickName like ?'
     },
     book: {

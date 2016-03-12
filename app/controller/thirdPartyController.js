@@ -19,6 +19,8 @@ module.exports = {
             return redis.expireAsync(option.mobile, smsConfig.expireTime);
         }).then(function (reply) {
             res.send({ret: 0, message: i18n.get('sms.send.success')});
+        }).catch(function (err) {
+            res.send({ret: 1, message: err.message});
         });
         return next();
     },
@@ -26,6 +28,8 @@ module.exports = {
         rongcloudSDK.user.getToken(req.body.uid, req.body.nickName, req.body.headPic, function (err, resultText) {
             if (err) throw err;
             res.send({ret: 0, data: JSON.parse(resultText)})
+        }).catch(function (err) {
+            res.send({ret: 1, message: err.message});
         });
     },
     getQiniuToken: function (req, res, next) {

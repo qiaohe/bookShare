@@ -13,6 +13,10 @@ module.exports = {
         var uid = req.user.id;
         memberDAO.findById(uid).then(function (members) {
             res.send({ret: 0, data: members[0]});
+        }).catch(function (err) {
+            res.send({ret: 1, message: err.message});
+        }).catch(function (err) {
+            res.send({ret: 1, message: err.message});
         });
         return next();
     },
@@ -47,7 +51,7 @@ module.exports = {
             });
         }).catch(function (err) {
             res.send({ret: 0, message: err.message});
-        });
+        })
         return next();
     },
 
@@ -68,6 +72,8 @@ module.exports = {
                 member.rongCloudToken = JSON.parse(resultText).token;
                 res.send({ret: 0, data: member})
             });
+        }).catch(function (err) {
+            res.send({ret: 1, message: err.message});
         });
         return next();
     },
@@ -76,6 +82,8 @@ module.exports = {
         if (!token) return res.send(401, i18n.get('token.not.provided'));
         redis.delAsync(token).then(function () {
             res.send({ret: 0, message: i18n.get('logout.success')});
+        }).catch(function (err) {
+            res.send({ret: 1, message: err.message});
         });
         next();
     },
@@ -87,6 +95,30 @@ module.exports = {
             return memberDAO.findById(member.id);
         }).then(function (members) {
             return res.send({ret: 0, data: members[0]});
+        }).catch(function (err) {
+            res.send({ret: 1, message: err.message});
+        });
+        return next();
+    },
+    resetPwd: function (req, res, next) {
+        var mobile = req.body.username;
+        var certCode = req.body.certCode;
+        var newPwd = req.body.password;
+        redis.getAsync(mobile).then(function (reply) {
+            if (!(reply && reply == certCode)) return res.send({ret: 0, message: i18n.get('sms.code.invalid')});
+            return memberDAO.updatePwd(md5(newPwd), mobile).then(function (result) {
+                return memberDAO.findByUserName(mobile);
+            }).then(function (users) {
+                var token = jwt.sign({
+                    name: users[0].name,
+                    mobile: users[0].mobile,
+                    id: users[0].id
+                }, config.app.tokenSecret, {expiresIn: config.app.tokenExpire});
+                redis.set(token, JSON.stringify(users[0]));
+                res.send({ret: 0, data: {uid: users[0].id, token: token}});
+            });
+        }).catch(function (err) {
+            res.send({ret: 1, message: err.message});
         });
         return next();
     }

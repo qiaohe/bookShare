@@ -4,7 +4,7 @@ module.exports = {
     server: {
         name: 'book share ',
         version: '0.0.1',
-        host: '121.42.171.213',
+        host: 'localhost',
         port: 8082
     },
     db: {
@@ -25,7 +25,7 @@ module.exports = {
     },
     redis: {
         host: '127.0.0.1',
-        port: 6381
+        port: 6379
     },
     sms: {
         providerUrl: 'http://115.29.44.189:8080/sms/smsInterface.do',

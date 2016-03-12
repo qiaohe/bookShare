@@ -16,6 +16,8 @@ module.exports = {
             return friendIdList.length ? memberDAO.findByIds(friendIdList.join(',')) : [];
         }).then(function (friends) {
             return res.send({ret: 0, data: friends})
+        }).catch(function (err) {
+            res.send({ret: 1, message: err.message});
         });
         return next();
     },
@@ -42,6 +44,8 @@ module.exports = {
             }
         }).then(function () {
             res.send({ret: 0, message: i18n.get('friend.add.success')});
+        }).catch(function (err) {
+            res.send({ret: 1, message: err.message});
         });
         return next();
     },
@@ -67,6 +71,8 @@ module.exports = {
                 });
             });
 
+        }).catch(function (err) {
+            res.send({ret: 1, message: err.message});
         });
         return next();
     },
@@ -75,6 +81,8 @@ module.exports = {
         memberDAO.findByIds(friendId).then(function (members) {
             if (!members.length) return res.send({ret: 0, data: []});
             return res.send({ret: 0, data: members[0]});
+        }).catch(function (err) {
+            res.send({ret: 1, message: err.message});
         });
         return next();
     }
