@@ -46,7 +46,7 @@ module.exports = {
         appKey: "0fce1f73a7ac164ca3e09dc7"
     },
     template: {
-        bookUnavailable: "亲，不好意思啊，暂时不能出借《:title》给你，如需更多信息请留言给我。谢谢！。",
+        bookUnavailable: "亲，不好意思，《:title》暂时不能借给你，如需更多信息请留言给我。谢谢！。",
         share: "我分享一本书给您，书名为:\<a href='#/tab/book/:bookId'>:title<br/><img src=\":image\"/\>\<\/a\>"
     },
     rongcloud: {

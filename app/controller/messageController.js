@@ -22,15 +22,15 @@ function getMessage(uid, message, callback) {
 function getConversationList(uid, conversationUsers, cb) {
     Promise.map(conversationUsers, function (user) {
         var con = new Conversation(uid, user.id);
-        return con.getMessageKey().then(function(messageKey) {
-           return redis.getAsync(messageKey + ':l').then(function (lastMessage) {
+        return con.getMessageKey().then(function (messageKey) {
+            return redis.getAsync(messageKey + ':l').then(function (lastMessage) {
                 var m = JSON.parse(lastMessage);
                 user.lastMessage = m.message;
                 user.date = m.d;
                 return redis.getAsync(messageKey + ':u:' + uid);
             }).then(function (unreadCount) {
                 user.unreadCount = unreadCount ? unreadCount : 0;
-               return user;
+                return user;
             });
         })
     }).then(function (conversationUsers) {
@@ -48,7 +48,7 @@ module.exports = {
         var con = new Conversation(uid, receiverId);
         redis.zadd(con.myConversationKey(), new Date().getTime(), receiverId);
         redis.zadd(con.receiverConversationKey(), new Date().getTime(), uid);
-        con.getMessageKey().then(function(messageKey) {
+        con.getMessageKey().then(function (messageKey) {
             redis.set(messageKey + ':l', JSON.stringify({d: new Date().getTime(), message: message}));
             redis.incr(messageKey + ':u:' + receiverId);
             getMessage(uid, message, function (body) {
@@ -63,7 +63,7 @@ module.exports = {
     getConversationWithFriendId: function (req, res, next) {
         var uid = req.user.id;
         var con = new Conversation(uid, req.params.friendId);
-        con.getMessageKey().then(function(messageKey) {
+        con.getMessageKey().then(function (messageKey) {
             redis.set(messageKey + ':u:' + uid, 0);
             var d1 = +req.query.d + 1;
             var d2 = moment(+req.query.d).add(-12, 'M').toDate().getTime();
@@ -81,7 +81,7 @@ module.exports = {
     getConversationWithFriendIdAfter: function (req, res, next) {
         var uid = req.user.id;
         var con = new Conversation(uid, req.params.friendId);
-        con.getMessageKey().then(function(messageKey) {
+        con.getMessageKey().then(function (messageKey) {
             redis.set(messageKey + ':u:' + uid, 0);
             var d1 = +req.query.d + 1;
             var d2 = moment(+req.query.d).add(12, 'M').toDate().getTime();
@@ -112,14 +112,24 @@ module.exports = {
         next();
     },
 
+    removeConversation: function (req, res, next) {
+        var uid = req.user.id;
+        redis.zremAsync('uid:' + uid + ':cs', req.params.id).then(function (result) {
+            res.send({ret: 0, message: '删除会话成功'});
+        }).catch(function (err) {
+            res.send({ret: 1, message: err.message});
+        });
+        next();
+    },
+
     getUnreadMessageCount: function (req, res, next) {
         var uid = req.user.id;
         var results = [];
         redis.zrangeAsync(['uid:' + uid + ':cs', 0, -1]).then(function (users) {
-           return Promise.map(users, function (user) {
+            return Promise.map(users, function (user) {
                 var con = new Conversation(uid, user);
-                return con.getMessageKey().then(function(messageKey) {
-                   return redis.getAsync(messageKey + ':u:' + uid).then(function (unreadCount) {
+                return con.getMessageKey().then(function (messageKey) {
+                    return redis.getAsync(messageKey + ':u:' + uid).then(function (unreadCount) {
                         results.push(unreadCount);
                     });
                 }).then(function () {

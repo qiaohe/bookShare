@@ -66,11 +66,18 @@ module.exports = {
             Promise.map(books, function (bookId) {
                 return redis.zremAsync(`book:${bookId}:borrowing.users`, friendUid);
             }).then(function () {
-                redis.zremAsync([`uid:${uid}:friends`, friendUid]).then(function () {
-                    res.send({ret: 0, message: i18n.get('friend.remove.success')});
-                });
+                return redis.zremAsync([`uid:${uid}:friends`, friendUid]);
+            }).then(function () {
+                return redis.zremAsync([`uid:${friendUid}:friends`, uid]);
+            }).then(function () {
+                return redis.delAsync(`uid:${uid}:cs`);
+            }).then(function () {
+                return redis.delAsync(`uid:${friendUid}:cs`);
+            }).then(function () {
+                return redis.delAsync(`uid:${uid}:cs`);
+            }).then(function () {
+                res.send({ret: 0, message: i18n.get('friend.remove.success')});
             });
-
         }).catch(function (err) {
             res.send({ret: 1, message: err.message});
         });

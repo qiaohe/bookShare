@@ -294,6 +294,12 @@ module.exports = [
         secured: 'user'
     },
     {
+        method: 'del',
+        path: '/api/conversations/:id',
+        handler: messageController.removeConversation,
+        secured: 'user'
+    },
+    {
         method: 'get',
         path: '/api/conversations/friends/:friendId/messages',
         handler: messageController.getConversationWithFriendId,

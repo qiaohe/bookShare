@@ -26,8 +26,7 @@ module.exports = {
         return db.query(sqlMapping.user.updatePwd, [pwd, mobile]);
     },
 
-
     search: function (keyWords) {
-        return db.query(sqlMapping.user.search, ['%' + keyWords + '%', '\'%' + keyWords + '%\'']);
+        return db.query(sqlMapping.user.search, ['%' + keyWords + '%', '%' + keyWords + '%']);
     }
 }

@@ -1,4 +1,5 @@
 'use strict';
+console.log(new Date().getTime());
 var restify = require('restify');
 var config = require('./config');
 var router = require('./middleware/route');
