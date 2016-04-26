@@ -30,7 +30,7 @@ module.exports = {
                 var friendUid = members[0].id;
                 if (friendUid == uid) return res.send({ret: 0, message: i18n.get('friends.add.same.error')});
                 return redis.zaddAsync([`uid:${uid}:friends`, new Date().getTime(), friendUid]).then(function () {
-                    messageSender.send(uid, friendUid, '我想和你成为好友，互相晒书或者分享图书，如果可以，点击这条留言，我们可以就可以看见对方的图书了。');
+                    messageSender.send(uid, friendUid, '我想和你成为好友，互相晒书或者分享图书。');
                     return redis.zaddAsync([`uid:${friendUid}:friends`, new Date().getTime(), uid]);
                 });
             } else {

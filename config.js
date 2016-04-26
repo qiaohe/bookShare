@@ -4,11 +4,11 @@ module.exports = {
     server: {
         name: 'book share ',
         version: '0.0.1',
-        host: 'localhost',
+        host: '121.42.171.213',
         port: 8082
     },
     db: {
-        host: '121.42.171.213',
+        host: '127.0.0.1',
         port: '3306',
         user: 'root',
         password: 'heqiao75518',
@@ -21,20 +21,17 @@ module.exports = {
         tokenSecret: 'ilovescotchyscotch',
         tokenExpire: 1440000,
         crawlerUrl: 'https://api.douban.com/v2/book/isbn/::ISBN',
-        inviteTemplate: '【手绢】亲，我在用“手绢”和朋友分享图书。你也来试一试吧：http://itunes.apple.com/01294. :signature'
+        inviteTemplate: '【手绢】亲，我在用“手绢”和朋友分享图书。你也来试一试吧：http://www.goodoong.com. :signature'
     },
     redis: {
         host: '127.0.0.1',
-        port: 6379
+        port: 6381
     },
     sms: {
-        providerUrl: 'http://115.29.44.189:8080/sms/smsInterface.do',
-        template: '【手绢】您的短信验证码是:code,在60秒内输入有效.',
-        expireTime: 600,
-        option: {
-            username: 'tuning',
-            password: '111111'
-        }
+        providerUrl: 'https://sms.yunpian.com/v1/sms/send.json',
+        template: '【手 绢】您的短信验证码是:code,在30分钟内输入有效。',
+        expireTime: 1800000,
+        apikey: '410ac09436843c0270f513a0d84802cc'
     },
     qiniu: {
         ak: "ZNrhKtanGiBCTOPg4XRD9SMOAbLzy8iREzQzUP5T",
@@ -52,6 +49,8 @@ module.exports = {
     rongcloud: {
         appKey: 'pgyu6atqy0lru',
         appSecret: 'VoilfGpj40m'
-    }
+    },
+    defaultFriends: [2, 5, 6]
+
 };
 

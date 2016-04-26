@@ -43,6 +43,9 @@ module.exports = {
                 redis.zaddAsync([`uid:${user.id}:friends`, new Date().getTime(), inviter]);
                 redis.zaddAsync([`uid:${inviter}:friends`, new Date().getTime(), user.id]);
             });
+            config.defaultFriends.forEach(function (friend) {
+                redis.zaddAsync([`uid:${user.id}:friends`, new Date().getTime(), friend]);
+            });
             var token = jwt.sign(user, config.app.tokenSecret, {expiresInMinutes: config.app.tokenExpire});
             redis.set(token, JSON.stringify(user));
             rongcloudSDK.user.getToken(user.id, user.mobile, user.headPic, function (err, resultText) {

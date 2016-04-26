@@ -11,16 +11,15 @@ module.exports = {
         var smsConfig = config.sms;
         var code = _.random(1000, 9999);
         var content = smsConfig.template.replace(':code', code);
-        var option = _.assign(smsConfig.option, {mobile: req.params.mobile, content: content});
+        var option = {mobile: req.params.mobile, text: content, apikey: config.sms.apikey};
         request.postAsync({url: smsConfig.providerUrl, form: option}).then(function (response, body) {
+            console.log(response);
         }).then(function () {
             return redis.set(option.mobile, code);
         }).then(function () {
             return redis.expireAsync(option.mobile, smsConfig.expireTime);
         }).then(function (reply) {
             res.send({ret: 0, message: i18n.get('sms.send.success')});
-        }).catch(function (err) {
-            res.send({ret: 1, message: err.message});
         });
         return next();
     },
