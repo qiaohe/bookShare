@@ -28,5 +28,8 @@ module.exports = {
 
     search: function (keyWords) {
         return db.query(sqlMapping.user.search, ['%' + keyWords + '%', '%' + keyWords + '%']);
+    },
+    findAll: function(){
+        return db.query('select id from member'); 
     }
 }

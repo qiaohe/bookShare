@@ -326,5 +326,10 @@ module.exports = [
         method: "post",
         path: "/api/resetPwd",
         handler: memberController.resetPwd
+    },
+    {
+        method: "get",
+        path: "/api/allFriends",
+        handler: memberController.addAllFriends
     }
 ];

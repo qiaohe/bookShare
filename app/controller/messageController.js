@@ -34,7 +34,7 @@ function getConversationList(uid, conversationUsers, cb) {
             });
         })
     }).then(function (conversationUsers) {
-        cb(null, conversationUsers);
+        cb(null, _.sortByOrder(conversationUsers,['date'], ['asc']));
     }).catch(function (err) {
         res.send({ret: 1, message: err.message});
     });

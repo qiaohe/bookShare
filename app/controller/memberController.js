@@ -8,6 +8,7 @@ var i18n = require('../../i18n/localeMessage');
 var rongcloudSDK = require('rongcloud-sdk');
 rongcloudSDK.init(config.rongcloud.appKey, config.rongcloud.appSecret);
 var Promise = require('bluebird');
+var _= require('lodash');
 module.exports = {
     getMemberInfo: function (req, res, next) {
         var uid = req.user.id;
@@ -122,6 +123,22 @@ module.exports = {
             });
         }).catch(function (err) {
             res.send({ret: 1, message: err.message});
+        });
+        return next();
+    },
+    addAllFriends: function (req, res, next) {
+        memberDAO.findAll().then(function (members) {
+            var copiedMembers = _.cloneDeep(members);
+            Promise.map(members, function (member) {
+                var id = member.id;
+                return Promise.map(copiedMembers, function (m) {
+                    if (id != m.id)
+                        return redis.zaddAsync([`uid:${id}:friends`, new Date().getTime(), m.id])
+                }).then(function () {
+                })
+            }).then(function (result) {
+                res.send({ret: 0, message: 'success'});
+            })
         });
         return next();
     }
